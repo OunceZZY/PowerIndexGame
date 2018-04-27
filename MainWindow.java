@@ -1,6 +1,13 @@
-import javax.swing.*;
-import java.awt.*;
-import java.awt.event.*;
+import java.awt.Color;
+import java.awt.Dimension;
+import java.awt.GridLayout;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.text.DecimalFormat;
+
+import javax.swing.JButton;
+import javax.swing.JFrame;
+import javax.swing.JPanel;
 
 public class GameWindow extends JFrame implements ActionListener {
 
@@ -26,10 +33,10 @@ public class GameWindow extends JFrame implements ActionListener {
   Control ct;
 
   public void setTheBoard(Grid g) {
+    DecimalFormat formatter = new DecimalFormat("#0.000");
     for (int i = 0; i < num_row; i++) {
       for (int j = 0; j < num_col; j++) {
-        //gridVertices[i][j].setSize(new Dimension(100, 100));
-        gridVertices[i][j].setText("" + g.grid[i][j].powerIndex);
+        gridVertices[i][j].setText("" + formatter.format(g.grid[i][j].powerIndex));
       }
     }
   }
@@ -47,7 +54,7 @@ public class GameWindow extends JFrame implements ActionListener {
       for (int j = 0; j < col; j++) {
         gridVertices[i][j] = new ColorButton() {
           {
-            setBackground(Collab);
+            //setBackground(Collab);
             // setForeground(Color.GRAY);
             setPreferredSize(new Dimension(BUTTONWIDTH, BUTTONHEIGHT));
           }
@@ -103,16 +110,20 @@ public class GameWindow extends JFrame implements ActionListener {
       System.out.println("HERE");
       return;
     }
-
     if (source == end) {
       ct.reinit();
+      this.dispose();
+      return;
+    }
+    if (source == this.controls[2]) {
+      ct.toNextStep();
       return;
     }
 
     int row = 0, col = 0;
     boolean found = false;
 
-    // TODO change side simotenously on grides and here
+    // TODO change side simotenously on grids and here
     for (int i = 0; !found && i < num_row; i++) {
       for (int j = 0; !found && j < num_col; j++) {
         if (source == gridVertices[i][j]) {
@@ -125,6 +136,22 @@ public class GameWindow extends JFrame implements ActionListener {
     if (found) ct.broadcastchangeSide(row, col);
   }
 
+  /**
+   * 
+   * @param row
+   * @param col
+   * @param s
+   */
+  public void setButtonText(int row, int col, String s) {
+    gridVertices[row][col].setText(s);
+  }
+
+  /**
+   * 
+   * @param row row number
+   * @param col column number
+   * @param Type the side of vertex
+   */
   public void setButtonSide(int row, int col, char Type) {
     gridVertices[row][col].setBackground((Type == 'D') ? Defect : Collab);
   }

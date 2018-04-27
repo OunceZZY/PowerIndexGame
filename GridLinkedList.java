@@ -1,11 +1,11 @@
 
 public class GridLinkedList {
   Grid head, tail, cycle;// head, tail, and the start of a cycle respectively
-  DiffusionStrategy ds;
+  Grid cursor;
 
   GridLinkedList() {
-    head = tail;
     tail = null;
+    head = tail;
     cycle = null;
   }
 
@@ -13,11 +13,25 @@ public class GridLinkedList {
     if (head == null) {
       head = e;
       tail = head;
+      cursor = head;
+      return;
     }
     tail.next = e;
     e.prev = tail;
     tail = tail.next;
   }
 
-  
+  void clear() {
+    Grid curr = head;
+    while (curr != null) {
+      System.out.println("gll clean");
+      head = head.next;
+      curr = null;
+      curr = head;
+    }
+  }
+
+  void cursorToNext(){
+    cursor = cursor.next;
+  }
 }

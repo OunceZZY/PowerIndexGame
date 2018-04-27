@@ -22,7 +22,7 @@ public class InfoMenu extends JFrame implements ActionListener {
     strategyPanel.add(new JLabel("Grid type choice:"));
     gridType = new JTextField("1", 20);
     strategyPanel.add(new JLabel("Positive power number:"));
-    ppn = new JTextField("0.66", 20);
+    ppn = new JTextField("0.5", 20);
     strategyPanel.add(strategyChoice);
     strategyPanel.add(gridType);
     strategyPanel.add(ppn);
@@ -99,8 +99,10 @@ public class InfoMenu extends JFrame implements ActionListener {
       } catch (Exception exp) {
         return;
       }
+      System.out.println("Confirm Ready to initialize");
       ct.initialization(strat_num, grid_type_num,postivepowernumber, high_num, wide_num);
       this.setVisible(false);
+      System.out.println("Confirm done");
     }
 
   }

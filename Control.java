@@ -12,9 +12,28 @@ public class Control implements GameInitType {
     IM = new InfoMenu(this);
   }
 
+  /**
+   * This method takes, where there should be one, the head of GridLinkedList
+   * And calculate the power index of each vertex
+   * 
+   * Then put the UI board with the corresponding number presentation;
+   */
   void initialTheGame() {
     DS.initialTheBoard(gll.head);
     GW.setTheBoard(gll.head);
+  }
+
+  void toNextStep() {
+    Grid updatedGrid = DS.updateGrid(gll.cursor);
+    gll.add(updatedGrid);
+    gll.cursorToNext();
+
+    for (int i = 0; i < Height; i++) {
+      for (int j = 0; j < Width; j++) {
+        GW.setButtonSide(i, j, gll.cursor.getVertices()[i][j].side);
+        GW.setButtonText(i, j, "" + gll.cursor.getVertices()[i][j].getPowerIndex());
+      }
+    }
   }
 
   void initialization(int ds_num, int grid_initialization, double powerX, int height,
@@ -65,6 +84,13 @@ public class Control implements GameInitType {
     GW.setButtonSide(topHalf - 1, Width / 2, Vertex.Collab);
   }
 
+  /**
+   * this method should only be used when initializing the game
+   * the user free to calculate change the grid looks like
+   * 
+   * @param row
+   * @param col
+   */
   void broadcastchangeSide(int row, int col) {
     GW.changeButtonSide(row, col);
     gll.head.getVertices()[row][col].changeSide();
@@ -72,9 +98,13 @@ public class Control implements GameInitType {
   }
 
   void reinit() {
-    GW = null;
-    gll = null;
+    System.out.println("reinit start");
     IM.setVisible(true);
+    gll.clear();
+    //GW.dispose();
+    GW.setVisible(false);
+    //GW = null;
+    System.out.println("reinit done");
   }
 
 }
