@@ -3,7 +3,7 @@ import java.text.DecimalFormat;
 public class Grid {
   Grid prev, next;
   Vertex[][] grid;
-  double positive_power_number;
+  //double positive_power_number;
   int row, col;
 
   public Grid(int row, int col) {

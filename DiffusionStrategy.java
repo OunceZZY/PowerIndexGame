@@ -8,6 +8,13 @@
 public abstract class DiffusionStrategy {
   public static final char COL = 'C';
   public static final char DEF = 'D';
-  public abstract void initialTheBoard(Grid grid);
+
+  double positive_power_number;
+
+  public DiffusionStrategy() {}
+  public DiffusionStrategy(double ppn) {
+    positive_power_number = ppn;
+  }
+  public abstract void powerIndexTheBoard(Grid grid);
   public abstract Grid updateGrid(Grid grid);
 }

@@ -23,10 +23,10 @@ public class ColorButton extends JButton {
     setLayout(new BorderLayout());
     add(label, BorderLayout.CENTER);
   }
-  
+
   @Override
-  public void setText(String text){
-    label.setFont(new Font(null,0,12));
+  public void setText(String text) {
+    label.setFont(new Font(null, 0, 12));
     label.setHorizontalTextPosition(JLabel.CENTER);
     label.setText(text);
     label.setOpaque(true);
@@ -65,5 +65,18 @@ public class ColorButton extends JButton {
     Graphics2D g2d = (Graphics2D) g;
     g2d.setColor(bg);
     g2d.fill(rectangle);
+  }
+
+  @Override
+  public boolean equals(Object o) {
+    if (!(o instanceof Vertex)) return false;
+    Vertex obj = (Vertex) o;
+    /*if (obj.getPowerIndex() == Double.parseDouble(this.getText()))
+      return (obj.getSide() == ((this.bg.equals(GameWindow.Collab)) ? 'C' : 'D')) ? true
+          : false;
+    return false;*/
+    return ((obj.getPowerIndex() == Double.parseDouble(this.getText()))
+        && (obj.getSide() == ((this.bg.equals(GameWindow.Collab)) ? 'C' : 'D')))
+            ? true : false;
   }
 }

@@ -12,34 +12,9 @@ public class Control implements GameInitType {
     IM = new InfoMenu(this);
   }
 
-  /**
-   * This method takes, where there should be one, the head of GridLinkedList
-   * And calculate the power index of each vertex
-   * 
-   * Then put the UI board with the corresponding number presentation;
-   */
-  void initialTheGame() {
-    DS.initialTheBoard(gll.head);
-    GW.setTheBoard(gll.head);
-  }
-
-  void toNextStep() {
-    Grid updatedGrid = DS.updateGrid(gll.cursor);
-    gll.add(updatedGrid);
-    gll.cursorToNext();
-
-    for (int i = 0; i < Height; i++) {
-      for (int j = 0; j < Width; j++) {
-        GW.setButtonSide(i, j, gll.cursor.getVertices()[i][j].side);
-        GW.setButtonText(i, j, "" + gll.cursor.getVertices()[i][j].getPowerIndex());
-      }
-    }
-  }
-
-  void initialization(int ds_num, int grid_initialization, double powerX, int height,
+  void initialTheWindow(int ds_num, int grid_initialization, double powerX, int height,
       int width) {
 
-    gll = new GridLinkedList();
     Height = height;
     Width = width;
 
@@ -47,23 +22,54 @@ public class Control implements GameInitType {
     GW.ct = this;
 
     Grid curr = new Grid(Height, Width);
-    curr.positive_power_number = powerX;
-
+    gll = new GridLinkedList();
     gll.add(curr);
 
-    // TODO set strategy
+    // set strategy
     switch (ds_num) {
     case 1:
-      DS = new GridLikeStrategy();
+      DS = new GridLikeStrategy(powerX);
       break;
     }
 
+    // set inital board looks like
     switch (grid_initialization) {
     case 1:
       HalfHalfAndOne(curr);
       break;
     }
+  }
 
+  /**
+   * 
+   * This method takes, where there should be one, the head of GridLinkedList
+   * And calculate the power index of each vertex
+   * 
+   * Then put the UI board with the corresponding number presentation;
+   */
+  void initialTheGame() {
+    if (gll.getSize() > 1) {
+      Grid newHead = gll.cursor;
+      gll.clear();
+      gll.add(newHead);
+    }
+    gll.testprint();
+    DS.powerIndexTheBoard(gll.head);
+    GW.setTheBoard(null, gll.head);
+  }
+
+  void toNextStep() {
+    if (gll.cursor.next == null) {
+      gll.add(DS.updateGrid(gll.cursor));
+    }
+    gll.cursorToNext();
+    GW.setTheBoard(gll.cursor.prev, gll.cursor);
+  }
+
+  void lastStep() {
+    if (gll.cursor.prev == null) { return; }
+    gll.cursorToPrev();
+    GW.setTheBoard(gll.cursor.next, gll.cursor);
   }
 
   public void HalfHalfAndOne(Grid curr) {
@@ -94,16 +100,17 @@ public class Control implements GameInitType {
   void broadcastchangeSide(int row, int col) {
     GW.changeButtonSide(row, col);
     gll.head.getVertices()[row][col].changeSide();
-    // TODO update the thing in grid's side;
   }
 
+  /**
+   * to clear everything in the memory
+   */
   void reinit() {
     System.out.println("reinit start");
     IM.setVisible(true);
     gll.clear();
     //GW.dispose();
     GW.setVisible(false);
-    //GW = null;
     System.out.println("reinit done");
   }
 

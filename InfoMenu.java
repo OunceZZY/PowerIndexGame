@@ -100,7 +100,7 @@ public class InfoMenu extends JFrame implements ActionListener {
         return;
       }
       System.out.println("Confirm Ready to initialize");
-      ct.initialization(strat_num, grid_type_num,postivepowernumber, high_num, wide_num);
+      ct.initialTheWindow(strat_num, grid_type_num,postivepowernumber, high_num, wide_num);
       this.setVisible(false);
       System.out.println("Confirm done");
     }

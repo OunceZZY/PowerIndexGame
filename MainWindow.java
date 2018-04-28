@@ -14,8 +14,8 @@ public class GameWindow extends JFrame implements ActionListener {
   final static Color Collab = new Color(32, 191, 241);
   final static Color Defect = new Color(252, 42, 28);
 
-  int BUTTONHEIGHT = 30;
-  int BUTTONWIDTH = 60;
+  final int BUTTONHEIGHT = 30;
+  final int BUTTONWIDTH = 60;
 
   private JPanel[] gridRows; // see design sheet
   private JButton[][] gridVertices;
@@ -32,11 +32,20 @@ public class GameWindow extends JFrame implements ActionListener {
 
   Control ct;
 
-  public void setTheBoard(Grid g) {
+  /**
+   * this method take in a grid and put the information of the vertex to the corresponding JButton
+   * 
+   * @param g the current grid should be
+   */
+  public void setTheBoard(Grid original, Grid g) {
     DecimalFormat formatter = new DecimalFormat("#0.000");
     for (int i = 0; i < num_row; i++) {
       for (int j = 0; j < num_col; j++) {
-        gridVertices[i][j].setText("" + formatter.format(g.grid[i][j].powerIndex));
+        if (original == null || !original.getVertices()[i][j].equals(g
+            .getVertices()[i][j])) {
+          gridVertices[i][j].setText("" + formatter.format(g.grid[i][j].powerIndex));
+          setButtonSide(i, j, g.getVertices()[i][j].side);
+        }
       }
     }
   }
@@ -72,7 +81,7 @@ public class GameWindow extends JFrame implements ActionListener {
     controlButtons = new JPanel();
     controls = new JButton[3];
     controls[0] = new JButton("Start");
-    controls[1] = new JButton("");
+    controls[1] = new JButton("Prev");
     controls[2] = new JButton("Next");
     for (JButton a : controls) {
       controlButtons.add(a);
@@ -95,6 +104,8 @@ public class GameWindow extends JFrame implements ActionListener {
   /**
    * action finding (in order)
    * start:control[0]: undefined 4/25
+   * prev: last state of the state
+   * next: to update from this state
    * end: end this window and back to menu
    * 
    * find button location
@@ -103,7 +114,6 @@ public class GameWindow extends JFrame implements ActionListener {
    */
   @Override
   public void actionPerformed(ActionEvent e) {
-    // TODO Auto-generated method stub
     Object source = e.getSource();
     if (source == controls[0]) {
       ct.initialTheGame();
@@ -115,6 +125,10 @@ public class GameWindow extends JFrame implements ActionListener {
       this.dispose();
       return;
     }
+    if (source == this.controls[1]) {
+      ct.lastStep();
+      return;
+    }
     if (source == this.controls[2]) {
       ct.toNextStep();
       return;
@@ -123,7 +137,6 @@ public class GameWindow extends JFrame implements ActionListener {
     int row = 0, col = 0;
     boolean found = false;
 
-    // TODO change side simotenously on grids and here
     for (int i = 0; !found && i < num_row; i++) {
       for (int j = 0; !found && j < num_col; j++) {
         if (source == gridVertices[i][j]) {

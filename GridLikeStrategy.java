@@ -6,53 +6,60 @@ public class GridLikeStrategy extends DiffusionStrategy {
   final int[][] closedNeighborForTop = { { 0, 0 }, { 0, -1 }, { 0, 1 }, { 1, 0 } };
   final int[][] closedNeighborForBottom = { { 0, 0 }, { 0, -1 }, { 0, 1 }, { -1, 0 } };
 
-  public GridLikeStrategy() {
+  public GridLikeStrategy(double ppn) {
+    super(ppn);
   }
 
   @Override
-  public void initialTheBoard(Grid grid) {
+  public void powerIndexTheBoard(Grid grid) {
     int height = grid.row, width = grid.col;
 
     Vertex[][] graph = grid.getVertices();
     for (int i = 0; i < height; i++) { // identify the row
       for (int j = 0; j < width; j++) { // identify the column
-        graph[i][j].powerIndex = this.calculatePowerIndex(graph, height, width, i, j,
-            grid.positive_power_number);
+        graph[i][j].powerIndex = calculatePowerIndex(graph, height, width, i, j);
       }
     }
   }
 
+  /**
+   * 
+   * @param grid the current grid
+   * @param ppn the positive power number of the index
+   * @return
+   */
   @Override
   public Grid updateGrid(Grid grid) {
     int height = grid.row, width = grid.col;
-    Vertex[][] previous = grid.getVertices();
-
     Grid nG = new Grid(grid.row, grid.col); // new Grid
-    nG.positive_power_number = grid.positive_power_number;
+
+    Vertex[][] previous = grid.getVertices();
     for (int i = 0; i < grid.row; i++) {
       for (int j = 0; j < grid.col; j++) {
 
-        // first determin if change side
-        boolean isOverriding = this.determineSide(previous, height, width, i, j,
-            grid.positive_power_number);
+        // first determine if change side
+        boolean isOverriding = this.determineSide(previous, height, width, i, j);
         nG.getVertices()[i][j] = previous[i][j].copy();
         if (isOverriding)
           nG.getVertices()[i][j].changeSide();
       }
     }
-
-    Vertex[][] graph = nG.getVertices();
-    for (int i = 0; i < height; i++) { // identify the row
-      for (int j = 0; j < width; j++) { // identify the column
-        graph[i][j].powerIndex = this.calculatePowerIndex(graph, height, width, i, j,
-            nG.positive_power_number);
-      }
-    }
-
+    powerIndexTheBoard(nG);
     return nG;
   }
 
-  boolean determineSide(Vertex[][] graph, int height, int width, int i, int j, double x) {
+  /**
+   * giving a vertex [][] and determine the vertex on i,j
+   * is it going to be overrode in the next iteration
+   * 
+   * @param graph the vertex grid
+   * @param height number of rows
+   * @param width number of columns
+   * @param i the row to determine
+   * @param j the column to determine
+   * @return whether or not there is a overriding situation
+   */
+  boolean determineSide(Vertex[][] graph, int height, int width, int i, int j) {
     int[][] specifiedDir;
     if (i == 0) specifiedDir = this.closedNeighborForTop;
     else if (i == height - 1) specifiedDir = this.closedNeighborForBottom;
@@ -73,38 +80,15 @@ public class GridLikeStrategy extends DiffusionStrategy {
         if (wantToOverride <= wantToDefend) {
           override = false;
           break;
-        } 
+        }
       }
       if (override) return true;
       override = true;
     }
     return false;
-    /*Vertex self = graph[i][j];
-    Vertex thisNeigh;
-    Vertex iterateNeigh;
-    boolean isOverriding = true;
-    for (int[] dir : specifiedDir) {
-      thisNeigh = graph[i + dir[0]][((j + dir[1] + width) % width)];
-      if (self.side != thisNeigh.side) {
-        for (int[] dir2 : specifiedDir) {
-          if (dir != dir2) {
-            iterateNeigh = graph[i + dir2[0]][((j + dir2[1] + width) % width)];
-            if (thisNeigh.side != iterateNeigh.side &&
-                thisNeigh.getPowerIndex() <= iterateNeigh.getPowerIndex()) {
-              isOverriding = false;
-              break;
-            }
-          }
-        }
-        if (isOverriding) break;
-        isOverriding = true;
-      }
-    }*/
-    
   }
 
-  double calculatePowerIndex(Vertex[][] graph, int height, int width, int i, int j,
-      double x) {
+  double calculatePowerIndex(Vertex[][] graph, int height, int width, int i, int j) {
     int cd[] = { 0, 0 };
 
     int[][] specifiedDir;
@@ -113,14 +97,14 @@ public class GridLikeStrategy extends DiffusionStrategy {
     else specifiedDir = this.closedNeighbor;
 
     for (int[] dir : specifiedDir) {
-      cd[graph[i + dir[0]][((j + dir[1] + width) % width)].getSide() - super.COL]++;
+      cd[graph[i + dir[0]][((j + dir[1] + width) % width)].getSide() - COL]++;
     }
     // counting c and d done;
     double power = (double) cd[0] / (double) (cd[0] + cd[1]);;
     if (graph[i][j].side == Vertex.Collab)
-      return (power < x) ? 0 : 1 / (double) cd[0];
+      return (power < positive_power_number) ? 0 : 1 / (double) cd[0];
     else
-      return (power >= x) ? 0 : 1 / (double) cd[1];
+      return (power >= positive_power_number) ? 0 : 1 / (double) cd[1];
   }
 
 }

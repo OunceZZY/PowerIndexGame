@@ -19,11 +19,11 @@ public class Vertex {
     side = s;
     powerIndex = p;
   }
-  
-  public double getPowerIndex(){
+
+  public double getPowerIndex() {
     return powerIndex;
   }
-  
+
   public void changeSide() {
     side = (side == 'C') ? 'D' : 'C';
   }
@@ -51,6 +51,15 @@ public class Vertex {
   public String toString() {
     DecimalFormat formatter = new DecimalFormat("#0.000");
     return "" + side + " " + formatter.format(powerIndex);
+  }
+
+  @Override
+  public boolean equals(Object o) {
+    if (!(o instanceof Vertex)) return false;
+    Vertex obj = (Vertex) o;
+    if (obj.powerIndex == this.powerIndex && obj.side == this.side)
+      return true;
+    return false;
   }
 
 }
