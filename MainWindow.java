@@ -4,9 +4,11 @@ import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.text.DecimalFormat;
+import java.util.ArrayList;
 
 import javax.swing.JButton;
 import javax.swing.JFrame;
+import javax.swing.JLabel;
 import javax.swing.JPanel;
 
 public class GameWindow extends JFrame implements ActionListener {
@@ -21,28 +23,29 @@ public class GameWindow extends JFrame implements ActionListener {
   private JButton[][] gridVertices;
   private int num_row, num_col;
 
-  public JButton[][] getGridVertices() {
-    return gridVertices;
-  }
-
   private JPanel controlButtons;
-  private JButton[] controls; // 0: start 1: stop 2: next
+  private ArrayList<JButton> controls; // 0: start 1: stop 2: next
+
+  private JButton shiftLeft, shiftRight;
 
   private JButton end;
+
+  private JButton calculateCycle;
+  private JLabel cycleInfo;
 
   Control ct;
 
   /**
-   * this method take in a grid and put the information of the vertex to the corresponding JButton
    * 
+   * @param original the original to find the change
    * @param g the current grid should be
    */
   public void setTheBoard(Grid original, Grid g) {
     DecimalFormat formatter = new DecimalFormat("#0.000");
     for (int i = 0; i < num_row; i++) {
       for (int j = 0; j < num_col; j++) {
-        if (original == null || !original.getVertices()[i][j].equals(g
-            .getVertices()[i][j])) {
+        if (original == null
+            || !original.getVertices()[i][j].equals(g.getVertices()[i][j])) {
           gridVertices[i][j].setText("" + formatter.format(g.grid[i][j].powerIndex));
           setButtonSide(i, j, g.getVertices()[i][j].side);
         }
@@ -63,42 +66,47 @@ public class GameWindow extends JFrame implements ActionListener {
       for (int j = 0; j < col; j++) {
         gridVertices[i][j] = new ColorButton() {
           {
-            //setBackground(Collab);
-            // setForeground(Color.GRAY);
             setPreferredSize(new Dimension(BUTTONWIDTH, BUTTONHEIGHT));
+            setText("");
           }
         };
-        gridVertices[i][j].setText("");//new JButton(""+i+","+j);
-        //setPreferredSize(new Dimension(5, 5));gridVertices[i][j].setPreferredSize(new Dimension(5, 5));
-        //gridVertices[i][j].setBackground(Color.GRAY);
         gridVertices[i][j].addActionListener(this);
         gridRows[i].add(gridVertices[i][j]);
       }
-
       add(gridRows[i]);
     }
-
+    //-----------------------------------------------------------------------------------------------------------------------------
     controlButtons = new JPanel();
-    controls = new JButton[3];
-    controls[0] = new JButton("Start");
-    controls[1] = new JButton("Prev");
-    controls[2] = new JButton("Next");
+    controls = new ArrayList<JButton>();
+    controls.add(new JButton("Start"));
+    controls.add(new JButton("Prev"));
+    controls.add(new JButton("Next"));
+
+    end = new JButton("End");
+    controls.add(end);
+    shiftLeft = new JButton("<");
+    shiftRight = new JButton(">");
+    controls.add(shiftLeft);
+    controls.add(shiftRight);
+
+    calculateCycle = new JButton("Calculate cycle");
+    cycleInfo = new JLabel();
+    cycleInfo.setVisible(false);
+    controls.add(calculateCycle);
+
     for (JButton a : controls) {
       controlButtons.add(a);
       a.addActionListener(this);
     }
-    end = new JButton("End");
-    end.addActionListener(this);
-    controlButtons.add(end);
+    controlButtons.add(cycleInfo);
 
     add(controlButtons);
-
+    //-----------------------------------------------------------------------------------------------------------------------------------------
     setTitle("Power Index Game");
     setSize(col * BUTTONWIDTH + 200, row * BUTTONHEIGHT + 300);
     setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
     setLocationRelativeTo(null);
     setVisible(true);
-
   }
 
   /**
@@ -107,6 +115,9 @@ public class GameWindow extends JFrame implements ActionListener {
    * prev: last state of the state
    * next: to update from this state
    * end: end this window and back to menu
+   * shiftToLeft: as the name
+   * shiftToRight: as above
+   * calculate the cycle
    * 
    * find button location
    * change side
@@ -115,7 +126,7 @@ public class GameWindow extends JFrame implements ActionListener {
   @Override
   public void actionPerformed(ActionEvent e) {
     Object source = e.getSource();
-    if (source == controls[0]) {
+    if (source == controls.get(0)) {
       ct.initialTheGame();
       System.out.println("HERE");
       return;
@@ -125,15 +136,28 @@ public class GameWindow extends JFrame implements ActionListener {
       this.dispose();
       return;
     }
-    if (source == this.controls[1]) {
-      ct.lastStep();
+    if (source == controls.get(1)) {
+      ct.showLastState();
       return;
     }
-    if (source == this.controls[2]) {
-      ct.toNextStep();
+    if (source == controls.get(2)) {
+      ct.showNextState();
+      return;
+    }
+    if (source == this.shiftLeft) {
+      ct.shiftTo(-1);
+      return;
+    }
+    if (source == this.shiftRight) {
+      ct.shiftTo(1);
+      return;
+    }
+    if (source == this.calculateCycle) {
+      ct.toCalcTheCycle();
       return;
     }
 
+    //-----------------------------------------------------------------------------------------------------------------------------
     int row = 0, col = 0;
     boolean found = false;
 
@@ -176,9 +200,13 @@ public class GameWindow extends JFrame implements ActionListener {
    * @param col column number of the button
    */
   public void changeButtonSide(int row, int col) {
+    gridVertices[row][col].setBackground((gridVertices[row][col].getBackground()
+        .equals(Collab)) ? Defect : Collab);
+  }
 
-    gridVertices[row][col].setBackground((gridVertices[row][col].getBackground().equals(
-        Collab)) ? Defect : Collab);
+  public void setCycleMessage(String stringMessage) {
+    cycleInfo.setText(stringMessage);
+    cycleInfo.setVisible(true);
   }
 
 }

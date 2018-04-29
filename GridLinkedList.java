@@ -3,6 +3,8 @@ public class GridLinkedList {
   Grid head, tail, cycle;// head, tail, and the start of a cycle respectively
   Grid cursor;
   int size;
+  int precycleSize;
+  int cycleSize;
   //double positive_power_number;
 
   GridLinkedList() {
@@ -10,6 +12,8 @@ public class GridLinkedList {
     head = tail;
     cycle = null;
     size = 0;
+    precycleSize = 0;
+    cycleSize = 0;
   }
 
   void add(Grid e) {
@@ -25,8 +29,20 @@ public class GridLinkedList {
     tail = tail.next;
   }
 
+  void cleanAfter(Grid h) {
+    Grid curr = h;
+    while (curr != null) {
+      h = h.next;
+      curr.next = null;
+      curr.prev = null;
+      curr = null;
+      curr = h;
+    }
+    System.gc();
+  }
+
   void clear() {
-    Grid curr = head;
+    /*Grid curr = head;
     while (curr != null) {
       System.out.println("gll clean");
       head = head.next;
@@ -34,9 +50,10 @@ public class GridLinkedList {
       curr.prev = null;
       curr = null;
       curr = head;
-    }
+    }*/
     tail = null;
     cycle = null;
+    cleanAfter(this.head);
     head = null;
     size = 0;
     System.gc();
@@ -48,6 +65,12 @@ public class GridLinkedList {
 
   void cursorToPrev() {
     cursor = cursor.prev;
+    Grid curr = head;
+    while (curr != cursor) {
+      System.out.print(curr.hashCode() + "->");
+      curr = curr.next;
+    }
+    System.out.println("");
   }
 
   int getSize() {
@@ -60,5 +83,6 @@ public class GridLinkedList {
       System.out.print(curr.hashCode() + "->");
       curr = curr.next;
     }
+    System.out.println("");
   }
 }

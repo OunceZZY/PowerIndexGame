@@ -1,5 +1,16 @@
-import javax.swing.*;
-import java.awt.*;
+import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Font;
+import java.awt.Graphics;
+import java.awt.Graphics2D;
+import java.awt.Rectangle;
+
+import javax.swing.JButton;
+import javax.swing.JLabel;
+import javax.swing.UIManager;
+
+//import javax.swing.*;
+//import java.awt.*;
 
 public class ColorButton extends JButton {
   JLabel label = new JLabel();
@@ -71,11 +82,17 @@ public class ColorButton extends JButton {
   public boolean equals(Object o) {
     if (!(o instanceof Vertex)) return false;
     Vertex obj = (Vertex) o;
-    /*if (obj.getPowerIndex() == Double.parseDouble(this.getText()))
-      return (obj.getSide() == ((this.bg.equals(GameWindow.Collab)) ? 'C' : 'D')) ? true
-          : false;
+    /*if (obj.getPowerIndex() == Double.parseDouble(this.getText())) {
+      char thisside;
+      if (this.bg.equals(GameWindow.Collab)) 
+        thisside = 'C';
+      else 
+        thisside = 'D';
+      if (obj.getSide() == thisside) return true;
+    }
     return false;*/
-    return ((obj.getPowerIndex() == Double.parseDouble(this.getText()))
+    return ((this.getText().equals("") ||
+        obj.getPowerIndex() == Double.parseDouble(this.getText()))
         && (obj.getSide() == ((this.bg.equals(GameWindow.Collab)) ? 'C' : 'D')))
             ? true : false;
   }

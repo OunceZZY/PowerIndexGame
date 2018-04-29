@@ -53,6 +53,10 @@ public class Vertex {
     return "" + side + " " + formatter.format(powerIndex);
   }
 
+  public boolean onTheSameSideWith(Vertex o) {
+    return this.side == o.side;
+  }
+
   @Override
   public boolean equals(Object o) {
     if (!(o instanceof Vertex)) return false;
