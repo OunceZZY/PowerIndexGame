@@ -1,6 +1,6 @@
 /**
- * Index    Strategy type
- * 1        GridLike Strategy
+ * Index Strategy type
+ * 1 GridLike Strategy
  * 
  * @author OwenZhang
  *
@@ -11,10 +11,14 @@ public abstract class DiffusionStrategy {
 
   double positive_power_number;
 
-  public DiffusionStrategy() {}
+  public DiffusionStrategy() {
+  }
+
   public DiffusionStrategy(double ppn) {
     positive_power_number = ppn;
   }
+
   public abstract void powerIndexTheBoard(Grid grid);
+
   public abstract Grid updateGrid(Grid grid);
 }

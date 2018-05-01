@@ -42,15 +42,6 @@ public class GridLinkedList {
   }
 
   void clear() {
-    /*Grid curr = head;
-    while (curr != null) {
-      System.out.println("gll clean");
-      head = head.next;
-      curr.next = null;
-      curr.prev = null;
-      curr = null;
-      curr = head;
-    }*/
     tail = null;
     cycle = null;
     cleanAfter(this.head);
@@ -65,12 +56,12 @@ public class GridLinkedList {
 
   void cursorToPrev() {
     cursor = cursor.prev;
-    Grid curr = head;
+    /*Grid curr = head;
     while (curr != cursor) {
       System.out.print(curr.hashCode() + "->");
       curr = curr.next;
     }
-    System.out.println("");
+    System.out.println("");*/
   }
 
   int getSize() {

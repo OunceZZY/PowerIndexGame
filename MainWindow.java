@@ -1,3 +1,9 @@
+
+/**
+ * This window is designed for the index game itself 
+ * and the user can click on button (as the replacement
+ * of a vertex) and setup the graph as they will
+ */
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.GridLayout;
@@ -15,6 +21,7 @@ public class GameWindow extends JFrame implements ActionListener {
 
   final static Color Collab = new Color(32, 191, 241);
   final static Color Defect = new Color(252, 42, 28);
+  final static Color Unused = null;
 
   final int BUTTONHEIGHT = 30;
   final int BUTTONWIDTH = 60;

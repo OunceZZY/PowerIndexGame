@@ -2,24 +2,12 @@ import java.util.ArrayList;
 
 public class GridLikeStrategy extends DiffusionStrategy {
 
-  final int[][] closedNeighbor = { { 0, 0 }, { 0, -1 }, { 0, 1 }, { 1, 0 }, { -1, 0 } };
-  final int[][] closedNeighborForTop = { { 0, 0 }, { 0, -1 }, { 0, 1 }, { 1, 0 } };
-  final int[][] closedNeighborForBottom = { { 0, 0 }, { 0, -1 }, { 0, 1 }, { -1, 0 } };
+  final static int[][] closedNeighbor = { { 0, 0 }, { 0, -1 }, { 0, 1 }, { 1, 0 }, { -1, 0 } };
+  final static int[][] closedNeighborForTop = { { 0, 0 }, { 0, -1 }, { 0, 1 }, { 1, 0 } };
+  final static int[][] closedNeighborForBottom = { { 0, 0 }, { 0, -1 }, { 0, 1 }, { -1, 0 } };
 
   public GridLikeStrategy(double ppn) {
     super(ppn);
-  }
-
-  @Override
-  public void powerIndexTheBoard(Grid grid) {
-    int height = grid.row, width = grid.col;
-
-    Vertex[][] graph = grid.getVertices();
-    for (int i = 0; i < height; i++) { // identify the row
-      for (int j = 0; j < width; j++) { // identify the column
-        graph[i][j].powerIndex = calculatePowerIndex(graph, height, width, i, j);
-      }
-    }
   }
 
   /**
@@ -49,6 +37,22 @@ public class GridLikeStrategy extends DiffusionStrategy {
   }
 
   /**
+   * As explanation as determineSide and calculatePowerIndex
+   * 
+   * @param height
+   * @param i
+   * @param j
+   * @return
+   */
+  int[][] chooseSpecifiedDirection(int height, int i, int j) {
+    int[][] specifiedDir;
+    if (i == 0) specifiedDir = closedNeighborForTop;
+    else if (i == height - 1) specifiedDir = closedNeighborForBottom;
+    else specifiedDir = closedNeighbor;
+    return specifiedDir;
+  }
+
+  /**
    * giving a vertex [][] and determine the vertex on i,j
    * is it going to be overrode in the next iteration
    * 
@@ -60,11 +64,7 @@ public class GridLikeStrategy extends DiffusionStrategy {
    * @return whether or not there is a overriding situation
    */
   boolean determineSide(Vertex[][] graph, int height, int width, int i, int j) {
-    int[][] specifiedDir;
-    if (i == 0) specifiedDir = this.closedNeighborForTop;
-    else if (i == height - 1) specifiedDir = this.closedNeighborForBottom;
-    else specifiedDir = this.closedNeighbor;
-
+    int[][] specifiedDir = this.chooseSpecifiedDirection(height, i, j);
     ArrayList<Double> onThisSide = new ArrayList<>();
     ArrayList<Double> onTheOtherSide = new ArrayList<>();
     Vertex self = graph[i][j], thisNeigh;
@@ -90,21 +90,26 @@ public class GridLikeStrategy extends DiffusionStrategy {
 
   double calculatePowerIndex(Vertex[][] graph, int height, int width, int i, int j) {
     int cd[] = { 0, 0 };
-
-    int[][] specifiedDir;
-    if (i == 0) specifiedDir = this.closedNeighborForTop;
-    else if (i == height - 1) specifiedDir = this.closedNeighborForBottom;
-    else specifiedDir = this.closedNeighbor;
-
-    for (int[] dir : specifiedDir) {
+    int[][] specifiedDir = this.chooseSpecifiedDirection(height, i, j);
+    for (int[] dir : specifiedDir)
       cd[graph[i + dir[0]][((j + dir[1] + width) % width)].getSide() - COL]++;
-    }
     // counting c and d done;
     double power = (double) cd[0] / (double) (cd[0] + cd[1]);;
     if (graph[i][j].side == Vertex.Collab)
       return (power < positive_power_number) ? 0 : 1 / (double) cd[0];
     else
       return (power >= positive_power_number) ? 0 : 1 / (double) cd[1];
+  }
+
+  @Override
+  public void powerIndexTheBoard(Grid grid) {
+    int height = grid.row, width = grid.col;
+    Vertex[][] graph = grid.getVertices();
+    for (int i = 0; i < height; i++) { // identify the row
+      for (int j = 0; j < width; j++) { // identify the column
+        graph[i][j].powerIndex = calculatePowerIndex(graph, height, width, i, j);
+      }
+    }
   }
 
 }

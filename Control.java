@@ -193,6 +193,9 @@ public class Control implements GameInitType {
     case 1:
       DS = new GridLikeStrategy(powerX);
       break;
+    case 2:
+      DS = new StrongGridStrategy(powerX);
+      break;
     }
 
     // set inital board looks like
